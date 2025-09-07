@@ -1,0 +1,65 @@
+# EthicalRecon Dependencies
+# Core requirements for the vulnerability scanner
+
+# HTTP client library for web requests
+requests>=2.28.0
+
+# Terminal colors and formatting
+colorama>=0.4.6
+
+# URL parsing and manipulation
+urllib3>=1.26.0
+
+# Configuration file parsing
+PyYAML>=6.0
+
+# Optional dependencies for enhanced functionality
+# Uncomment if needed for advanced features
+
+# For advanced HTTP/2 support
+# httpx>=0.24.0
+
+# For async scanning capabilities
+# aiohttp>=3.8.0
+# asyncio>=3.4.3
+
+# For JSON Web Token manipulation
+# PyJWT>=2.6.0
+
+# For advanced parsing and extraction
+# beautifulsoup4>=4.11.0
+# lxml>=4.9.0
+
+# For regular expression enhancements
+# regex>=2022.0.0
+
+# For machine learning false positive reduction
+# scikit-learn>=1.2.0
+# numpy>=1.24.0
+
+# For database connectivity testing
+# SQLAlchemy>=2.0.0
+# psycopg2-binary>=2.9.0
+# pymongo>=4.3.0
+
+# For advanced reporting
+# jinja2>=3.1.0
+# markdown>=3.4.0
+
+# For performance monitoring
+# psutil>=5.9.0
+
+# For image processing (screenshot capabilities)
+# Pillow>=9.4.0
+
+# For DNS enumeration
+# dnspython>=2.3.0
+
+# For subdomain enumeration integration
+# python-whois>=0.8.0
+
+# Installation instructions:
+# pip3 install -r requirements.txt
+#
+# For development (additional tools):
+# pip3 install pytest black flake8 mypy
