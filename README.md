@@ -196,6 +196,7 @@ Requirements
     colorama - Terminal colors
     urllib3 - URL parsing
     PyYAML - Configuration parsing
+    virtual enviornment (venv)
 
 Legal Disclaimer
 
