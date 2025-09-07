@@ -236,6 +236,8 @@ Support
 Acknowledgments
 
     OWASP - For vulnerability classification standards
+
+    IF YOU HAVE ISSUES INSTALLING, DOWNLOAD THE ZIP FILES
     Security Community - For payload research and techniques
     Bug Bounty Platforms - For real-world testing methodologies
 
