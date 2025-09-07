@@ -1,0 +1,334 @@
+# EthicalRecon Configuration File
+# Comprehensive settings for vulnerability scanning
+
+# Scanning Configuration
+scanning:
+  # Number of concurrent threads
+  threads: 10
+  
+  # Request timeout in seconds
+  timeout: 10
+  
+  # Delay between requests (seconds) - for rate limiting
+  delay: 0.1
+  
+  # Maximum retries for failed requests
+  max_retries: 3
+  
+  # Follow redirects
+  follow_redirects: true
+  
+  # Maximum redirects to follow
+  max_redirects: 5
+  
+  # Verify SSL certificates
+  verify_ssl: false
+  
+  # User agent string
+  user_agent: "EthicalRecon/2.0.0 (Authorized Security Scanner)"
+
+# Vulnerability Detection Settings
+detection:
+  # Vulnerability types to scan for
+  enabled_types:
+    - xss
+    - sqli
+    - lfi
+    - rce
+    - ssrf
+    - redirect
+  
+  # Confidence thresholds (0.0 to 1.0)
+  confidence_threshold: 0.5
+  
+  # Maximum payloads to test per parameter
+  max_payloads_per_type: 20
+  
+  # Enable deep scanning (more thorough but slower)
+  deep_scan: true
+  
+  # Enable payload encoding/obfuscation
+  payload_encoding: true
+  
+  # Custom payload files (optional)
+  custom_payloads:
+    xss: "payloads/xss_payloads.txt"
+    sqli: "payloads/sqli_payloads.txt"
+    lfi: "payloads/lfi_payloads.txt"
+
+# Output Configuration
+output:
+  # Default output directory
+  output_dir: "ethicalrecon_results"
+  
+  # Default output formats
+  formats:
+    - json
+    - html
+    - text
+  
+  # Include proof-of-concept in reports
+  include_poc: true
+  
+  # Include curl commands in reports
+  include_curl: true
+  
+  # Timestamp format for output files
+  timestamp_format: "%Y%m%d_%H%M%S"
+  
+  # Compress output files
+  compress_output: false
+
+# HTTP Client Configuration
+http:
+  # Connection pool size
+  pool_connections: 20
+  
+  # Connection pool max size
+  pool_maxsize: 20
+  
+  # Keep-alive connections
+  keep_alive: true
+  
+  # Custom headers to include in requests
+  headers:
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    Accept-Language: "en-US,en;q=0.5"
+    Accept-Encoding: "gzip, deflate"
+    Connection: "keep-alive"
+    Cache-Control: "no-cache"
+  
+  # Proxy settings (optional)
+  proxy:
+    enabled: false
+    http: null
+    https: null
+  
+  # Cookie handling
+  cookies:
+    enabled: true
+    jar_file: null
+
+# Filtering and Exclusions
+filtering:
+  # File extensions to skip
+  skip_extensions:
+    - jpg
+    - jpeg
+    - png
+    - gif
+    - bmp
+    - svg
+    - ico
+    - pdf
+    - doc
+    - docx
+    - xls
+    - xlsx
+    - zip
+    - rar
+    - tar
+    - gz
+    - mp3
+    - mp4
+    - avi
+    - mov
+    - css
+    - js
+    - woff
+    - woff2
+    - ttf
+    - eot
+  
+  # Content types to skip
+  skip_content_types:
+    - image/
+    - video/
+    - audio/
+    - application/pdf
+    - application/zip
+    - application/x-zip-compressed
+    - application/msword
+    - application/vnd.ms-excel
+    - text/css
+    - application/javascript
+    - font/
+  
+  # Response size limits (bytes)
+  max_response_size: 10485760  # 10MB
+  min_response_size: 0
+  
+  # Status codes to skip
+  skip_status_codes:
+    - 404
+    - 500
+    - 502
+    - 503
+    - 504
+
+# Subdomain Enumeration Integration
+subdomain:
+  # Input file patterns to recognize
+  input_patterns:
+    - "*.txt"
+    - "*subdomains*"
+    - "*httpx*"
+    - "*live*"
+  
+  # Auto-detect httpx output format
+  auto_detect_httpx: true
+  
+  # Handle URLs with ports
+  include_ports: true
+  
+  # Default ports to test if not specified
+  default_ports:
+    - 80
+    - 443
+    - 8080
+    - 8443
+
+# Advanced Features
+advanced:
+  # Enable machine learning false positive reduction
+  ml_false_positive_reduction: false
+  
+  # Custom wordlists directory
+  wordlists_dir: "wordlists"
+  
+  # Enable payload mutations
+  payload_mutations: true
+  
+  # Enable context-aware testing
+  context_aware: true
+  
+  # Enable second-order injection testing
+  second_order_testing: false
+  
+  # Maximum scan depth for crawling
+  max_scan_depth: 3
+  
+  # Enable form parameter testing
+  test_forms: true
+  
+  # Enable header injection testing
+  test_headers: true
+
+# Logging Configuration
+logging:
+  # Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  level: INFO
+  
+  # Log file path (null for no file logging)
+  log_file: null
+  
+  # Console logging format
+  console_format: "%(asctime)s - %(levelname)s - %(message)s"
+  
+  # File logging format
+  file_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # Enable colored console output
+  colored_output: true
+
+# Performance Tuning
+performance:
+  # Memory usage limit (MB)
+  memory_limit: 512
+  
+  # Enable request caching
+  request_caching: false
+  
+  # Cache size (number of requests)
+  cache_size: 1000
+  
+  # Enable response compression
+  response_compression: true
+  
+  # Connection timeout for DNS resolution
+  dns_timeout: 5
+
+# Security Settings
+security:
+  # Maximum time for entire scan (seconds)
+  max_scan_time: 3600  # 1 hour
+  
+  # Maximum URLs to scan in one session
+  max_urls_per_scan: 10000
+  
+  # Enable rate limiting per host
+  rate_limit_per_host: true
+  
+  # Requests per second per host
+  requests_per_second_per_host: 5
+  
+  # Blacklisted domains/IPs
+  blacklist:
+    domains: []
+    ips: []
+  
+  # Whitelist mode (only scan whitelisted targets)
+  whitelist_mode: false
+  whitelist:
+    domains: []
+    ips: []
+
+# Integration Settings
+integrations:
+  # Burp Suite integration
+  burp:
+    enabled: false
+    proxy_url: "http://127.0.0.1:8080"
+    
+  # OWASP ZAP integration
+  zap:
+    enabled: false
+    proxy_url: "http://127.0.0.1:8081"
+  
+  # Nuclei integration
+  nuclei:
+    enabled: false
+    templates_path: "/path/to/nuclei-templates"
+  
+  # Custom webhook for notifications
+  webhook:
+    enabled: false
+    url: null
+    events:
+      - vulnerability_found
+      - scan_completed
+      - critical_vulnerability
+
+# Reporting Configuration
+reporting:
+  # Include executive summary
+  executive_summary: true
+  
+  # Include technical details
+  technical_details: true
+  
+  # Include remediation advice
+  remediation_advice: true
+  
+  # Include OWASP top 10 mapping
+  owasp_mapping: true
+  
+  # Include CVSS scoring
+  cvss_scoring: true
+  
+  # Custom report templates
+  templates:
+    html: "templates/report.html"
+    json: "templates/report.json"
+    text: "templates/report.txt"
+
+# Plugin System
+plugins:
+  # Enable plugin system
+  enabled: false
+  
+  # Plugin directory
+  plugin_dir: "plugins"
+  
+  # Enabled plugins
+  enabled_plugins: []
